@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Model Tabel Jadwal untuk Analisis Decision Tree
+model Jadwal {
+  id         Int      @id @default(autoincrement())
+  mataKuliah String
+  dosen      String
+  ruangan    String
+  waktu      String
+  status     String   @default("Aman") 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("jadwal") 
+}
+
+// Model Tabel Ruangan
+model Ruangan {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  kapasitas Int
+  fasilitas String
+  status    String   @default("Tersedia")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ruangan")
+}
+
+// Model Tabel Dosen
+model Dosen {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  nip       String
+  keahlian  String
+  kontak    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("dosen")
+}
+
+// Model Tabel Pengaturan
+model Pengaturan {
+  id                Int      @id @default(1) // Hanya satu baris pengaturan
+  namaInstitusi     String   @default("Universitas Pancasakti Tegal")
+  tahunAkademik     String   @default("2026/2027")
+  semester          String   @default("Ganjil")
+  notifikasiEmail   Boolean  @default(true)
+  temaAplikasi      String   @default("system")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("pengaturan")
+}
