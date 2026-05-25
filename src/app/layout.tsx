@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import "@/app/globals.css";
+import Providers from "@/components/providers";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,15 +22,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${poppins.variable} antialiased font-sans`} suppressHydrationWarning>
-        {/* Bungkus children dengan ThemeProvider */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -65,10 +65,10 @@ export default async function DashboardPage() {
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* HEADER SECTION */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
           Ringkasan Analisis
         </h1>
-        <p className="text-slate-500 dark:text-zinc-400 mt-1">
+        <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm sm:text-base">
           Data penjadwalan Informatika Universitas Pancasakti Tegal.
         </p>
       </div>
@@ -97,14 +97,14 @@ export default async function DashboardPage() {
 
       {/* RECENT ACTIVITY & CHART PREVIEW */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm h-[400px]">
+        <div className="lg:col-span-2 p-4 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm h-[280px] sm:h-[360px] lg:h-[400px]">
           <h3 className="font-bold text-lg mb-4">Grafik Penggunaan Lab</h3>
           <div className="flex items-center justify-center h-full text-slate-400 italic">
             [ Area Grafik Decision Tree Akan Muncul Di Sini ]
           </div>
         </div>
 
-        <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
+        <div className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg">Aktivitas Terakhir</h3>
             <Link href="/dashboard/schedule">
@@ -134,8 +134,8 @@ export default async function DashboardPage() {
               ))
             )}
           </div>
-          <Link href="/dashboard/schedule" className="block mt-8">
-            <Button className="w-full rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold h-11">
+          <Link href="/dashboard/schedule" className="block mt-6 sm:mt-8">
+            <Button className="w-full rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold h-10 sm:h-11">
               Buat Jadwal Baru <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>

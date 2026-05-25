@@ -80,15 +80,15 @@ export default function SettingsPage() {
     <div className="space-y-8 animate-in fade-in duration-700 max-w-4xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Pengaturan</h1>
-          <p className="text-slate-500 dark:text-zinc-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Pengaturan</h1>
+          <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm sm:text-base">
             Sesuaikan preferensi sistem dan profil aplikasi.
           </p>
         </div>
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="h-11 rounded-xl font-bold bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-zinc-200 transition-all px-8"
+          className="w-full sm:w-auto h-11 rounded-xl font-bold bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-zinc-200 transition-all px-8"
         >
           {isSaving ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -140,7 +140,7 @@ export default function SettingsPage() {
         </div>
 
         {/* NOTIFIKASI */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm flex items-center justify-between">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg">
               <Bell className="h-5 w-5" />

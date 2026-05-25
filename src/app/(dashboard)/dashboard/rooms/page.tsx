@@ -76,24 +76,24 @@ export default function RoomsPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            Manajemen Ruangan & Lab
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            Manajemen Ruangan &amp; Lab
           </h1>
-          <p className="text-slate-500 dark:text-zinc-400 mt-1">
+          <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm sm:text-base">
             Kelola data fasilitas ruangan dan kapasitas lab.
           </p>
         </div>
       </div>
 
       {/* FORM INPUT SECTION */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
-        <div className="flex items-center gap-3 mb-6">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
+        <div className="flex items-center gap-3 mb-4 sm:mb-6">
           <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg">
             <MapPin className="h-5 w-5" />
           </div>
-          <h2 className="text-lg font-bold">Input Ruangan Baru</h2>
+          <h2 className="text-base sm:text-lg font-bold">Input Ruangan Baru</h2>
         </div>
 
         <form
@@ -158,8 +158,8 @@ export default function RoomsPage() {
         </div>
       </div>
 
-      {/* TABLE SECTION */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
+      {/* TABLE SECTION — desktop */}
+      <div className="hidden md:block rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-slate-50 dark:bg-zinc-950/50">
@@ -235,6 +235,54 @@ export default function RoomsPage() {
             </TableBody>
           </Table>
         </div>
+      </div>
+
+      {/* CARD VIEW — mobile only */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+            <Loader2 className="h-6 w-6 animate-spin mb-2" />
+            <p className="text-sm">Mengambil data...</p>
+          </div>
+        ) : ruanganList.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 text-center text-slate-500 dark:text-zinc-500 text-sm">
+            Belum ada data ruangan.
+          </div>
+        ) : (
+          ruanganList.map((ruangan) => (
+            <div
+              key={ruangan.id}
+              className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm">{ruangan.nama}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">{ruangan.kapasitas} Mahasiswa</p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 shrink-0"
+                >
+                  {ruangan.status}
+                </Badge>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-zinc-400 mb-3">
+                <span className="font-semibold text-slate-700 dark:text-zinc-300">Fasilitas: </span>
+                {ruangan.fasilitas}
+              </div>
+              <div className="flex justify-end pt-2 border-t border-slate-100 dark:border-white/5">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDelete(ruangan.id)}
+                  className="text-red-500 hover:bg-red-50 rounded-lg text-xs h-8"
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

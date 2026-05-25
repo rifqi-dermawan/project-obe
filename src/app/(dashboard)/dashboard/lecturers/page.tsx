@@ -76,24 +76,24 @@ export default function LecturersPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Manajemen Dosen
           </h1>
-          <p className="text-slate-500 dark:text-zinc-400 mt-1">
+          <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm sm:text-base">
             Kelola data staf pengajar dan bidang keahlian.
           </p>
         </div>
       </div>
 
       {/* FORM INPUT SECTION */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
-        <div className="flex items-center gap-3 mb-6">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
+        <div className="flex items-center gap-3 mb-4 sm:mb-6">
           <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg">
             <Users className="h-5 w-5" />
           </div>
-          <h2 className="text-lg font-bold">Input Data Dosen</h2>
+          <h2 className="text-base sm:text-lg font-bold">Input Data Dosen</h2>
         </div>
 
         <form
@@ -170,8 +170,8 @@ export default function LecturersPage() {
         </div>
       </div>
 
-      {/* TABLE SECTION */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
+      {/* TABLE SECTION — desktop */}
+      <div className="hidden md:block rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-slate-50 dark:bg-zinc-950/50">
@@ -242,6 +242,52 @@ export default function LecturersPage() {
             </TableBody>
           </Table>
         </div>
+      </div>
+
+      {/* CARD VIEW — mobile only */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+            <Loader2 className="h-6 w-6 animate-spin mb-2" />
+            <p className="text-sm">Mengambil data...</p>
+          </div>
+        ) : dosenList.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 text-center text-slate-500 dark:text-zinc-500 text-sm">
+            Belum ada data dosen.
+          </div>
+        ) : (
+          dosenList.map((dosen) => (
+            <div
+              key={dosen.id}
+              className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm">{dosen.nama}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">{dosen.nip}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDelete(dosen.id)}
+                  className="text-red-500 hover:bg-red-50 rounded-lg text-xs h-8 shrink-0"
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-zinc-400">
+                <div>
+                  <span className="font-semibold text-slate-700 dark:text-zinc-300 block">Keahlian</span>
+                  {dosen.keahlian}
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-700 dark:text-zinc-300 block">Kontak</span>
+                  {dosen.kontak}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

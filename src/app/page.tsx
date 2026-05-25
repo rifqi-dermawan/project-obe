@@ -12,17 +12,17 @@ export default function LoginPage() {
       <SciFiBackground />
 
       {/* Container Login Tengah (White Glassmorphism) */}
-      <div className="relative z-10 w-full max-w-[440px] rounded-3xl bg-white/80 sm:p-8 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl border border-slate-200/60">
+      <div className="relative z-10 w-full max-w-[440px] rounded-3xl bg-white/80 p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl border border-slate-200/60">
         {/* Header Title & Logo */}
         <div className="mb-8 flex flex-col items-center space-y-3 text-center">
           <div className="rounded-2xl bg-white border border-slate-200 p-3.5 shadow-sm">
             <BrainCircuit className="h-8 w-8 text-slate-800" />
           </div>
           <div className="space-y-1">
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 heading">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 heading">
               DT-Scheduling
             </h1>
-            <p className="text-sm font-medium text-slate-500">
+            <p className="text-xs sm:text-sm font-medium text-slate-500">
               Analisis Jadwal Kelas Informatika
             </p>
           </div>
@@ -88,9 +88,9 @@ export default function LoginPage() {
         <div className="space-y-3">
           <Button
             variant="outline"
-            className="w-full font-medium h-12 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-all shadow-sm"
+            className="w-full font-medium h-11 sm:h-12 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-all shadow-sm"
           >
-            <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
+            <svg className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"
@@ -112,9 +112,9 @@ export default function LoginPage() {
           </Button>
           <Button
             variant="outline"
-            className="w-full font-medium h-12 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-all shadow-sm"
+            className="w-full font-medium h-11 sm:h-12 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-all shadow-sm"
           >
-            <svg className="mr-3 h-5 w-5" viewBox="0 0 21 21">
+            <svg className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 21 21">
               <rect x="1" y="1" width="9" height="9" fill="#f25022" />
               <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
               <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
