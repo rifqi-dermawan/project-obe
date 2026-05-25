@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   Mail,
   Lock,
@@ -171,11 +172,13 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <div className="bg-slate-50 dark:bg-zinc-950/50 p-4 border-t border-slate-100 dark:border-white/5 text-center">
+        <div className="bg-slate-50 dark:bg-zinc-950/50 p-5 border-t border-slate-100 dark:border-white/5 text-center flex flex-col items-center gap-2">
           <p className="text-xs text-slate-500 dark:text-zinc-500">
-            Halaman ini khusus untuk Administrator. Mahasiswa dapat melihat
-            jadwal melalui scan QR di ruangan masing-masing.
+            Halaman ini khusus untuk Administrator.
           </p>
+          <Link href="/jadwal" className="text-xs font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline">
+            Portal Jadwal Publik Mahasiswa &rarr;
+          </Link>
         </div>
       </motion.div>
     </div>

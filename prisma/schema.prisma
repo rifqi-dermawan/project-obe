@@ -11,6 +11,7 @@ model Jadwal {
   id         Int      @id @default(autoincrement())
   mataKuliah String
   dosen      String
+  kelas      String   @default("-")
   ruangan    String
   waktu      String
   status     String   @default("Aman") 
@@ -42,6 +43,7 @@ model Dosen {
   nip       String
   keahlian  String
   kontak    String
+  mintaLab  Boolean  @default(false) // Penanda apakah dosen ini menginginkan ruang Lab
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -68,9 +68,16 @@ export default function LoginPage() {
         </div>
 
         {/* Tombol Submit Utama (Dipindah ke atas) */}
-        <Button className="w-full h-12 rounded-xl font-bold bg-slate-900 text-white transition-all hover:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 border-0 mb-6">
+        <Button className="w-full h-12 rounded-xl font-bold bg-slate-900 text-white transition-all hover:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 border-0 mb-3">
           Masuk Ke Dashboard
         </Button>
+
+        {/* Tombol Portal Publik */}
+        <Link href="/jadwal" className="block w-full mb-6">
+          <Button variant="outline" className="w-full h-12 rounded-xl font-bold border-slate-200 text-slate-700 hover:bg-slate-50 transition-all dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
+            Lihat Jadwal Kuliah (Publik)
+          </Button>
+        </Link>
 
         {/* Divider (Teks disesuaikan) */}
         <div className="relative mb-6">

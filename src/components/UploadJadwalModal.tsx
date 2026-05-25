@@ -8,6 +8,7 @@ import { UploadCloud, FileText, Loader2, X, BrainCircuit } from "lucide-react";
 // 1. Definisikan tipe data yang diharapkan dari hasil kembalian AI
 export type JadwalHasilAI = {
   mataKuliah: string;
+  kelas: string;
   dosen: string;
   ruangan: string;
   hari: string;

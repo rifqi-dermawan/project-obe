@@ -46,6 +46,7 @@ export default function SchedulePage() {
 
   const [formData, setFormData] = useState({
     mataKuliah: "",
+    kelas: "",
     dosen: "",
     ruangan: "",
     waktu: "",
@@ -73,6 +74,7 @@ export default function SchedulePage() {
     e.preventDefault();
     if (
       !formData.mataKuliah ||
+      !formData.kelas ||
       !formData.dosen ||
       !formData.ruangan ||
       !formData.waktu
@@ -90,9 +92,9 @@ export default function SchedulePage() {
 
     if (result.success) {
       toast.success("Jadwal Baru Ditambahkan", {
-        description: `${formData.mataKuliah} berhasil disimpan.`,
+        description: `${formData.mataKuliah} (${formData.kelas}) berhasil disimpan.`,
       });
-      setFormData({ mataKuliah: "", dosen: "", ruangan: "", waktu: "" });
+      setFormData({ mataKuliah: "", kelas: "", dosen: "", ruangan: "", waktu: "" });
     } else {
       toast.error("Gagal Menyimpan", {
         description: "Terjadi kesalahan saat menghubungi database.",
@@ -114,6 +116,7 @@ export default function SchedulePage() {
 
         await addJadwal({
           mataKuliah: item.mataKuliah,
+          kelas: item.kelas || "-",
           dosen: item.dosen,
           ruangan: item.ruangan,
           waktu: waktuFormatted,
@@ -197,7 +200,7 @@ export default function SchedulePage() {
 
         <form
           onSubmit={handleAddJadwal}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end"
+          className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end"
         >
           <div className="space-y-2">
             <Label
@@ -211,6 +214,22 @@ export default function SchedulePage() {
               value={formData.mataKuliah}
               onChange={handleInputChange}
               placeholder="Contoh: Struktur Data"
+              className="h-11 rounded-xl"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
+              htmlFor="kelas"
+              className="text-slate-600 dark:text-zinc-400"
+            >
+              Kelas
+            </Label>
+            <Input
+              id="kelas"
+              value={formData.kelas}
+              onChange={handleInputChange}
+              placeholder="Contoh: 4A / 4E"
               className="h-11 rounded-xl"
               disabled={isSubmitting}
             />
@@ -302,6 +321,9 @@ export default function SchedulePage() {
                   Mata Kuliah
                 </TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-zinc-400">
+                  Kelas
+                </TableHead>
+                <TableHead className="font-semibold text-slate-600 dark:text-zinc-400">
                   Dosen
                 </TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-zinc-400">
@@ -322,7 +344,7 @@ export default function SchedulePage() {
               {isLoading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="h-32 text-center text-slate-500"
                   >
                     <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-slate-400" />{" "}
@@ -332,7 +354,7 @@ export default function SchedulePage() {
               ) : jadwalList.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="h-32 text-center text-slate-500 dark:text-zinc-500"
                   >
                     Belum ada data jadwal. Silakan tambahkan di atas atau
@@ -348,6 +370,9 @@ export default function SchedulePage() {
                     <TableCell className="font-medium">
                       {jadwal.mataKuliah}
                     </TableCell>
+                    <TableCell className="font-semibold text-indigo-600 dark:text-indigo-400">
+                      {jadwal.kelas || "-"}
+                    </TableCell>
                     <TableCell className="text-slate-600 dark:text-zinc-300">
                       {jadwal.dosen}
                     </TableCell>
@@ -360,12 +385,18 @@ export default function SchedulePage() {
                     <TableCell className="text-center">
                       <Badge
                         variant={
-                          jadwal.status === "Aman" ? "default" : "destructive"
+                          jadwal.status === "Aman"
+                            ? "default"
+                            : jadwal.status === "Potensi Bentrok"
+                            ? "outline"
+                            : "destructive"
                         }
                         className={
                           jadwal.status === "Aman"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-green-100 text-green-700 border-transparent hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400"
+                            : jadwal.status === "Potensi Bentrok"
+                            ? "bg-amber-100 text-amber-700 border-amber-300 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900/50 animate-pulse"
+                            : "bg-red-100 text-red-700 border-transparent hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400"
                         }
                       >
                         {jadwal.status}
@@ -416,12 +447,29 @@ export default function SchedulePage() {
             >
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm truncate">{jadwal.mataKuliah}</p>
+                  <p className="font-bold text-sm truncate">
+                    {jadwal.mataKuliah}{" "}
+                    <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                      ({jadwal.kelas || "-"})
+                    </span>
+                  </p>
                   <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">{jadwal.dosen}</p>
                 </div>
                 <Badge
-                  variant={jadwal.status === "Aman" ? "default" : "destructive"}
-                  className={jadwal.status === "Aman" ? "bg-green-100 text-green-700 shrink-0" : "bg-red-100 text-red-700 shrink-0"}
+                  variant={
+                    jadwal.status === "Aman"
+                      ? "default"
+                      : jadwal.status === "Potensi Bentrok"
+                      ? "outline"
+                      : "destructive"
+                  }
+                  className={
+                    jadwal.status === "Aman"
+                      ? "bg-green-100 text-green-700 border-transparent shrink-0 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400"
+                      : jadwal.status === "Potensi Bentrok"
+                      ? "bg-amber-100 text-amber-700 border-amber-300 shrink-0 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900/50 animate-pulse"
+                      : "bg-red-100 text-red-700 border-transparent shrink-0 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400"
+                  }
                 >
                   {jadwal.status}
                 </Badge>

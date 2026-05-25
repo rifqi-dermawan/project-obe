@@ -12,24 +12,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, Users, Loader2 } from "lucide-react";
+import { Plus, Trash2, Users, Loader2, RefreshCw } from "lucide-react";
 import {
   getDosen,
   addDosen,
   deleteDosen,
+  syncDosenWithEStaff,
   DosenData,
+  toggleDosenMintaLab,
 } from "@/app/actions/dosenActions";
+import { toast } from "sonner";
 
 export default function LecturersPage() {
   const [dosenList, setDosenList] = useState<DosenData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [unmatchedDosen, setUnmatchedDosen] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     nama: "",
     nip: "",
     keahlian: "",
     kontak: "",
+    mintaLab: false,
   });
 
   const fetchData = useCallback(async () => {
@@ -38,6 +43,33 @@ export default function LecturersPage() {
     setDosenList(data);
     setIsLoading(false);
   }, []);
+
+  const handleSyncEStaff = async () => {
+    setIsSyncing(true);
+    setUnmatchedDosen([]);
+    try {
+      const result = await syncDosenWithEStaff();
+      if (result.success) {
+        toast.success("Sinkronisasi Berhasil", {
+          description: result.message,
+        });
+        if (result.unmatchedNames && result.unmatchedNames.length > 0) {
+          setUnmatchedDosen(result.unmatchedNames);
+        }
+        await fetchData();
+      } else {
+        toast.error("Sinkronisasi Gagal", {
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      toast.error("Sinkronisasi Gagal", {
+        description: "Gagal terhubung dengan server E-Staff UPS Tegal.",
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -62,10 +94,11 @@ export default function LecturersPage() {
       nip: formData.nip,
       keahlian: formData.keahlian || "-",
       kontak: formData.kontak || "-",
+      mintaLab: formData.mintaLab,
     });
 
     await fetchData();
-    setFormData({ nama: "", nip: "", keahlian: "", kontak: "" });
+    setFormData({ nama: "", nip: "", keahlian: "", kontak: "", mintaLab: false });
     setIsSubmitting(false);
   };
 
@@ -85,7 +118,36 @@ export default function LecturersPage() {
             Kelola data staf pengajar dan bidang keahlian.
           </p>
         </div>
+        <Button
+          onClick={handleSyncEStaff}
+          disabled={isSyncing || isLoading || isSubmitting}
+          className="h-11 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 px-6 self-start sm:self-auto transition-all"
+        >
+          {isSyncing ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
+          {isSyncing ? "Mensinkronkan..." : "Sinkronisasi E-Staff"}
+        </Button>
       </div>
+
+      {unmatchedDosen.length > 0 && (
+        <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 text-amber-800 dark:text-amber-300 space-y-3 shadow-sm">
+          <h3 className="font-bold text-sm sm:text-base flex items-center gap-2">
+            ⚠️ Beberapa Dosen Belum Sinkron (Nama Tidak Cocok)
+          </h3>
+          <p className="text-xs sm:text-sm">
+            Dosen berikut terdeteksi di jadwal kuliah Anda, tetapi **tidak dapat dicocokkan otomatis** dengan E-Staff (kemungkinan karena penulisan nama yang disingkat, tidak lengkap, atau ada perbedaan karakter). 
+            Silakan edit nama mereka secara manual agar sama persis dengan nama resmi di E-Staff, lalu klik tombol **Sinkronisasi E-Staff** kembali untuk memperbarui NIP dan Email mereka:
+          </p>
+          <ul className="list-disc list-inside text-xs sm:text-sm font-semibold pl-2 space-y-1">
+            {unmatchedDosen.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* FORM INPUT SECTION */}
       <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/5 shadow-sm">
@@ -98,7 +160,7 @@ export default function LecturersPage() {
 
         <form
           onSubmit={handleAddDosen}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end"
         >
           <div className="space-y-2">
             <Label htmlFor="nama" className="text-slate-600 dark:text-zinc-400">
@@ -152,6 +214,19 @@ export default function LecturersPage() {
               disabled={isSubmitting}
             />
           </div>
+          <div className="flex items-center gap-2 h-11 px-3 border border-slate-200 dark:border-white/10 rounded-xl bg-slate-50 dark:bg-zinc-950/50">
+            <input
+              type="checkbox"
+              id="mintaLab"
+              checked={formData.mintaLab ?? false}
+              onChange={(e) => setFormData({ ...formData, mintaLab: e.target.checked })}
+              className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
+              disabled={isSubmitting}
+            />
+            <Label htmlFor="mintaLab" className="text-slate-600 dark:text-zinc-400 font-semibold cursor-pointer text-xs sm:text-sm">
+              Minta Ruang Lab
+            </Label>
+          </div>
         </form>
 
         <div className="mt-6 flex justify-end">
@@ -188,6 +263,9 @@ export default function LecturersPage() {
                 <TableHead className="font-semibold text-slate-600 dark:text-zinc-400">
                   Kontak
                 </TableHead>
+                <TableHead className="font-semibold text-slate-600 dark:text-zinc-400 text-center">
+                  Minta Lab
+                </TableHead>
                 <TableHead className="font-semibold text-slate-600 dark:text-zinc-400 text-right">
                   Aksi
                 </TableHead>
@@ -196,7 +274,7 @@ export default function LecturersPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-slate-500">
+                  <TableCell colSpan={6} className="h-32 text-center text-slate-500">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-slate-400" />
                     Mengambil data...
                   </TableCell>
@@ -204,7 +282,7 @@ export default function LecturersPage() {
               ) : dosenList.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="h-32 text-center text-slate-500 dark:text-zinc-500"
                   >
                     Belum ada data dosen.
@@ -225,6 +303,30 @@ export default function LecturersPage() {
                     </TableCell>
                     <TableCell className="text-slate-600 dark:text-zinc-300">
                       {dosen.kontak}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <input
+                        type="checkbox"
+                        checked={dosen.mintaLab ?? false}
+                        disabled={isSyncing || isLoading}
+                        onChange={async (e) => {
+                          const checked = e.target.checked;
+                          // Update UI optimistik
+                          setDosenList((prev) =>
+                            prev.map((d) => (d.id === dosen.id ? { ...d, mintaLab: checked } : d))
+                          );
+                          const res = await toggleDosenMintaLab(dosen.id, checked);
+                          if (res.success) {
+                            toast.success("Preferensi diperbarui", {
+                              description: `Preferensi lab untuk ${dosen.nama} berhasil diubah.`,
+                            });
+                          } else {
+                            toast.error("Gagal memperbarui preferensi");
+                            fetchData(); // Rollback ke data asli
+                          }
+                        }}
+                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
+                      />
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
@@ -275,14 +377,39 @@ export default function LecturersPage() {
                   <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
                 </Button>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-zinc-400">
+              <div className="grid grid-cols-3 gap-2 text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400">
                 <div>
                   <span className="font-semibold text-slate-700 dark:text-zinc-300 block">Keahlian</span>
-                  {dosen.keahlian}
+                  <span className="truncate block max-w-[100px]">{dosen.keahlian}</span>
                 </div>
                 <div>
                   <span className="font-semibold text-slate-700 dark:text-zinc-300 block">Kontak</span>
-                  {dosen.kontak}
+                  <span className="truncate block max-w-[100px]">{dosen.kontak}</span>
+                </div>
+                <div className="flex flex-col items-center justify-center border-l border-slate-100 dark:border-white/5 pl-2">
+                  <span className="font-semibold text-slate-700 dark:text-zinc-300 block mb-1">Minta Lab</span>
+                  <input
+                    type="checkbox"
+                    checked={dosen.mintaLab ?? false}
+                    disabled={isSyncing || isLoading}
+                    onChange={async (e) => {
+                      const checked = e.target.checked;
+                      // Update UI optimistik
+                      setDosenList((prev) =>
+                        prev.map((d) => (d.id === dosen.id ? { ...d, mintaLab: checked } : d))
+                      );
+                      const res = await toggleDosenMintaLab(dosen.id, checked);
+                      if (res.success) {
+                        toast.success("Preferensi diperbarui", {
+                          description: `Preferensi lab untuk ${dosen.nama} berhasil diubah.`,
+                        });
+                      } else {
+                        toast.error("Gagal memperbarui preferensi");
+                        fetchData(); // Rollback ke data asli
+                      }
+                    }}
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
+                  />
                 </div>
               </div>
             </div>

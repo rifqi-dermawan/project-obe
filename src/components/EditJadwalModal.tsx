@@ -23,6 +23,7 @@ export default function EditJadwalModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     mataKuliah: "",
+    kelas: "",
     dosen: "",
     ruangan: "",
     waktu: "",
@@ -33,6 +34,7 @@ export default function EditJadwalModal({
     if (jadwal) {
       setFormData({
         mataKuliah: jadwal.mataKuliah,
+        kelas: jadwal.kelas || "",
         dosen: jadwal.dosen,
         ruangan: jadwal.ruangan,
         waktu: jadwal.waktu,
@@ -91,14 +93,25 @@ export default function EditJadwalModal({
               </div>
 
               <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
-                <div className="space-y-2">
-                  <Label htmlFor="mataKuliah">Mata Kuliah</Label>
-                  <Input
-                    id="mataKuliah"
-                    value={formData.mataKuliah}
-                    onChange={handleInputChange}
-                    disabled={isSubmitting}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="mataKuliah">Mata Kuliah</Label>
+                    <Input
+                      id="mataKuliah"
+                      value={formData.mataKuliah}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="kelas">Kelas</Label>
+                    <Input
+                      id="kelas"
+                      value={formData.kelas}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="dosen">Dosen</Label>

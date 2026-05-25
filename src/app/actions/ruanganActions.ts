@@ -25,9 +25,13 @@ export async function addRuangan(data: {
   status: string;
 }) {
   try {
+    const isLab = data.nama.toLowerCase().includes("lab");
+    const tipeRuangan = isLab ? "LAB" : "KELAS";
+
     const newRuangan = await prisma.ruangan.create({
       data: {
         nama: data.nama,
+        tipe: tipeRuangan,
         kapasitas: data.kapasitas,
         fasilitas: data.fasilitas,
         status: data.status,

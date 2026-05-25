@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { recalculateJadwalStatus } from "@/app/actions/jadwalActions";
 
 // Endpoint GET Publik untuk diakses oleh Public App (Mahasiswa via QR Code)
 export async function GET(request: Request) {
@@ -7,6 +8,9 @@ export async function GET(request: Request) {
     // Tangkap parameter 'ruangan' dari URL (Contoh: ?ruangan=Lab Komputer 1)
     const { searchParams } = new URL(request.url);
     const ruanganQuery = searchParams.get("ruangan");
+
+    // Hitung ulang status bentrok & potensi bentrok berdasarkan preferensi lab dosen
+    await recalculateJadwalStatus();
 
     // Jika ada parameter ruangan, filter datanya. Jika tidak ada, kembalikan semua.
     const whereClause = ruanganQuery ? { ruangan: ruanganQuery } : {};
@@ -17,6 +21,7 @@ export async function GET(request: Request) {
       select: {
         id: true,
         mataKuliah: true,
+        kelas: true,
         dosen: true,
         ruangan: true,
         waktu: true,

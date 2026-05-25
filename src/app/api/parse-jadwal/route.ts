@@ -68,6 +68,7 @@ export async function POST(request: Request) {
       2. Struktur objek harus persis seperti ini:
          {
            "mataKuliah": "string",
+           "kelas": "string",
            "dosen": "string",
            "ruangan": "string",
            "hari": "string",
@@ -76,6 +77,7 @@ export async function POST(request: Request) {
          }
       3. Jika hari atau jam tidak eksplisit, coba deduksi dari konteks teks di sekitarnya.
       4. Format jam wajib "HH:MM" (contoh: 08:00, 13:30).
+      5. Cari kolom kelas (seperti 4A, 4E, Karyawan, Ekstensi). Jika informasi kelas tidak tertera secara terpisah, tetapi tertulis di nama mata kuliah (misalnya "Struktur Data (4A)"), pisahkan namanya: mataKuliah menjadi "Struktur Data" dan kelas menjadi "4A". Jika tidak ada informasi kelas sama sekali, isi "-".
     `;
 
     // 4. Jalankan AI
