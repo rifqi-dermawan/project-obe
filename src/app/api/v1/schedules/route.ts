@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { recalculateJadwalStatus } from "@/app/actions/jadwalActions";
+import { recalculateJadwalStatus } from "@/app/actions/scheduleActions";
 
 // Endpoint GET Publik untuk diakses oleh Public App (Mahasiswa via QR Code)
 export async function GET(request: Request) {
@@ -13,22 +13,22 @@ export async function GET(request: Request) {
     await recalculateJadwalStatus();
 
     // Jika ada parameter ruangan, filter datanya. Jika tidak ada, kembalikan semua.
-    const whereClause = ruanganQuery ? { ruangan: ruanganQuery } : {};
+    const whereClause = ruanganQuery ? { room: ruanganQuery } : {};
 
     // Ambil data langsung dari Supabase
-    const jadwalList = await prisma.jadwal.findMany({
+    const jadwalList = await prisma.schedule.findMany({
       where: whereClause,
       select: {
         id: true,
-        mataKuliah: true,
-        kelas: true,
-        dosen: true,
-        ruangan: true,
-        waktu: true,
+        subject: true,
+        class: true,
+        lecturer: true,
+        room: true,
+        time: true,
         status: true,
       },
       orderBy: {
-        waktu: "asc", // Urutkan berdasarkan waktu agar rapi saat dibaca mahasiswa
+        time: "asc", // Urutkan berdasarkan waktu agar rapi saat dibaca mahasiswa
       },
     });
 
@@ -48,6 +48,7 @@ export async function GET(request: Request) {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET",
           "Content-Type": "application/json",
+          "Access-Control-Allow-Headers": "Content-Type",
         },
       }
     );

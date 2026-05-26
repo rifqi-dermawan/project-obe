@@ -79,7 +79,7 @@ export default function DashboardLayout({
 
         <div className="p-4 border-t border-slate-200 dark:border-white/10">
           {/* Info user di sidebar desktop */}
-          {session?.user && (
+          {mounted && session?.user && (
             <div className="mb-3 px-2 py-2 rounded-xl bg-slate-50 dark:bg-white/5">
               <p className="text-xs font-bold text-slate-700 dark:text-zinc-200 truncate">{session.user.name ?? "Admin"}</p>
               <p className="text-[10px] text-slate-400 dark:text-zinc-500 truncate">{session.user.email}</p>
@@ -96,7 +96,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* --- MAIN CONTENT AREA --- */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
         {/* HEADER / NAVBAR */}
         <header className="h-14 sm:h-16 border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md flex items-center justify-between px-3 sm:px-4 lg:px-8 sticky top-0 z-30 transition-colors">
           <div className="flex items-center gap-4">
@@ -141,7 +141,7 @@ export default function DashboardLayout({
               </SheetContent>
             </Sheet>
             <h2 className="font-bold text-base lg:text-lg hidden sm:block">
-              Selamat Datang, {session?.user?.name?.split(" ")[0] ?? "Admin"}
+              Selamat Datang, {!mounted ? "Admin" : (session?.user?.name?.split(" ")[0] ?? "Admin")}
             </h2>
           </div>
 
@@ -167,13 +167,13 @@ export default function DashboardLayout({
               title="Keluar"
               className="h-8 w-8 sm:h-9 sm:w-9 cursor-pointer rounded-full bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700/50 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 hover:border-red-200 transition-all"
             >
-              {session?.user?.name?.[0]?.toUpperCase() ?? "A"}
+              {!mounted ? "A" : (session?.user?.name?.[0]?.toUpperCase() ?? "A")}
             </button>
           </div>
         </header>
 
         {/* PAGE CONTENT */}
-        <main className="p-3 sm:p-4 lg:p-8">{children}</main>
+        <main className="p-3 sm:p-4 lg:p-8 w-full max-w-full min-w-0 flex-1">{children}</main>
       </div>
     </div>
   );

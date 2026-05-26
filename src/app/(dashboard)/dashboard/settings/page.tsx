@@ -8,10 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { Settings, Save, Loader2, Building2, Bell, Palette } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
-  getPengaturan,
-  updatePengaturan,
-  PengaturanData,
-} from "@/app/actions/pengaturanActions";
+  getSettings,
+  updateSettings,
+  SettingsData,
+} from "@/app/actions/settingsActions";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -19,27 +19,27 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
-    namaInstitusi: "",
-    tahunAkademik: "",
+    institutionName: "",
+    academicYear: "",
     semester: "",
-    notifikasiEmail: true,
-    temaAplikasi: "system",
+    emailNotification: true,
+    appTheme: "system",
   });
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
-    const data = await getPengaturan();
+    const data = await getSettings();
     if (data) {
       setFormData({
-        namaInstitusi: data.namaInstitusi,
-        tahunAkademik: data.tahunAkademik,
+        institutionName: data.institutionName,
+        academicYear: data.academicYear,
         semester: data.semester,
-        notifikasiEmail: data.notifikasiEmail,
-        temaAplikasi: data.temaAplikasi,
+        emailNotification: data.emailNotification,
+        appTheme: data.appTheme,
       });
       // Set the actual next-themes theme based on saved settings
-      if (data.temaAplikasi !== "system") {
-        setTheme(data.temaAplikasi);
+      if (data.appTheme !== "system") {
+        setTheme(data.appTheme);
       }
     }
     setIsLoading(false);
@@ -54,17 +54,17 @@ export default function SettingsPage() {
   };
 
   const handleSwitchChange = (checked: boolean) => {
-    setFormData({ ...formData, notifikasiEmail: checked });
+    setFormData({ ...formData, emailNotification: checked });
   };
 
   const handleThemeChange = (selectedTheme: string) => {
-    setFormData({ ...formData, temaAplikasi: selectedTheme });
+    setFormData({ ...formData, appTheme: selectedTheme });
     setTheme(selectedTheme);
   };
 
   const handleSave = async () => {
     setIsSaving(true);
-    await updatePengaturan(formData);
+    await updateSettings(formData);
     setIsSaving(false);
   };
 
@@ -110,19 +110,19 @@ export default function SettingsPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="namaInstitusi">Nama Institusi</Label>
+              <Label htmlFor="institutionName">Nama Institusi</Label>
               <Input
-                id="namaInstitusi"
-                value={formData.namaInstitusi}
+                id="institutionName"
+                value={formData.institutionName}
                 onChange={handleInputChange}
                 className="h-11 rounded-xl dark:bg-zinc-950 dark:border-white/10"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tahunAkademik">Tahun Akademik</Label>
+              <Label htmlFor="academicYear">Tahun Akademik</Label>
               <Input
-                id="tahunAkademik"
-                value={formData.tahunAkademik}
+                id="academicYear"
+                value={formData.academicYear}
                 onChange={handleInputChange}
                 className="h-11 rounded-xl dark:bg-zinc-950 dark:border-white/10"
               />
@@ -153,7 +153,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <Switch
-            checked={formData.notifikasiEmail}
+            checked={formData.emailNotification}
             onCheckedChange={handleSwitchChange}
           />
         </div>

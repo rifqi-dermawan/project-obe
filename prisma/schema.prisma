@@ -6,14 +6,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Model Tabel Jadwal untuk Analisis Decision Tree
-model Jadwal {
+// Model Tabel Jadwal untuk Analisis Decision Tree (Schedule)
+model Schedule {
   id         Int      @id @default(autoincrement())
-  mataKuliah String
-  dosen      String
-  kelas      String   @default("-")
-  ruangan    String
-  waktu      String
+  subject    String   @map("mataKuliah")
+  lecturer   String   @map("dosen")
+  class      String   @default("-") @map("kelas")
+  room       String   @map("ruangan")
+  time       String   @map("waktu")
   status     String   @default("Aman") 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -21,13 +21,13 @@ model Jadwal {
   @@map("jadwal") 
 }
 
-// Model Tabel Ruangan
-model Ruangan {
+// Model Tabel Ruangan (Room)
+model Room {
   id          Int      @id @default(autoincrement())
-  nama        String
-  tipe        String   @default("KELAS") // Penanda khusus: "KELAS" atau "LAB"
-  kapasitas   Int
-  fasilitas   String
+  name        String   @map("nama")
+  type        String   @default("KELAS") @map("tipe") // Penanda khusus: "KELAS" atau "LAB"
+  capacity    Int      @map("kapasitas")
+  facilities  String   @map("fasilitas")
   status      String   @default("Tersedia")
   qrCodeUrl   String?  // Disiapkan untuk menyimpan URL/Token unik QR Code ruangan
   createdAt   DateTime @default(now())
@@ -36,28 +36,28 @@ model Ruangan {
   @@map("ruangan")
 }
 
-// Model Tabel Dosen
-model Dosen {
+// Model Tabel Dosen (Lecturer)
+model Lecturer {
   id        Int      @id @default(autoincrement())
-  nama      String
+  name      String   @map("nama")
   nip       String
-  keahlian  String
-  kontak    String
-  mintaLab  Boolean  @default(false) // Penanda apakah dosen ini menginginkan ruang Lab
+  expertise String   @map("keahlian")
+  contact   String   @map("kontak")
+  requestLab Boolean  @default(false) @map("mintaLab") // Penanda apakah dosen ini menginginkan ruang Lab
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("dosen")
 }
 
-// Model Tabel Pengaturan
-model Pengaturan {
+// Model Tabel Pengaturan (Settings)
+model Settings {
   id                Int      @id @default(1) // Hanya satu baris pengaturan
-  namaInstitusi     String   @default("Universitas Pancasakti Tegal")
-  tahunAkademik     String   @default("2026/2027")
+  institutionName   String   @default("Universitas Pancasakti Tegal") @map("namaInstitusi")
+  academicYear      String   @default("2026/2027") @map("tahunAkademik")
   semester          String   @default("Ganjil")
-  notifikasiEmail   Boolean  @default(true)
-  temaAplikasi      String   @default("system")
+  emailNotification Boolean  @default(true) @map("notifikasiEmail")
+  appTheme          String   @default("system") @map("temaAplikasi")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

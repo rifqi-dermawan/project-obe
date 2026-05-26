@@ -176,9 +176,6 @@ export default function LoginPage() {
           <p className="text-xs text-slate-500 dark:text-zinc-500">
             Halaman ini khusus untuk Administrator.
           </p>
-          <Link href="/jadwal" className="text-xs font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline">
-            Portal Jadwal Publik Mahasiswa &rarr;
-          </Link>
         </div>
       </motion.div>
     </div>

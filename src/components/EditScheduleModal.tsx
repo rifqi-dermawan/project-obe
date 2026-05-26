@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Loader2, Edit3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { JadwalData } from "@/app/actions/jadwalActions";
+import { JadwalData } from "@/app/actions/scheduleActions";
 
 type Props = {
   isOpen: boolean;
@@ -14,7 +14,7 @@ type Props = {
   onSave: (id: number, updatedData: Omit<JadwalData, "id">) => Promise<void>;
 };
 
-export default function EditJadwalModal({
+export default function EditScheduleModal({
   isOpen,
   onClose,
   jadwal,
@@ -22,22 +22,22 @@ export default function EditJadwalModal({
 }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    mataKuliah: "",
-    kelas: "",
-    dosen: "",
-    ruangan: "",
-    waktu: "",
+    subject: "",
+    class: "",
+    lecturer: "",
+    room: "",
+    time: "",
     status: "",
   });
 
   useEffect(() => {
     if (jadwal) {
       setFormData({
-        mataKuliah: jadwal.mataKuliah,
-        kelas: jadwal.kelas || "",
-        dosen: jadwal.dosen,
-        ruangan: jadwal.ruangan,
-        waktu: jadwal.waktu,
+        subject: jadwal.subject,
+        class: jadwal.class || "",
+        lecturer: jadwal.lecturer,
+        room: jadwal.room,
+        time: jadwal.time,
         status: jadwal.status,
       });
     }
@@ -95,47 +95,47 @@ export default function EditJadwalModal({
               <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="mataKuliah">Mata Kuliah</Label>
+                    <Label htmlFor="subject">Mata Kuliah</Label>
                     <Input
-                      id="mataKuliah"
-                      value={formData.mataKuliah}
+                      id="subject"
+                      value={formData.subject}
                       onChange={handleInputChange}
                       disabled={isSubmitting}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="kelas">Kelas</Label>
+                    <Label htmlFor="class">Kelas</Label>
                     <Input
-                      id="kelas"
-                      value={formData.kelas}
+                      id="class"
+                      value={formData.class}
                       onChange={handleInputChange}
                       disabled={isSubmitting}
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dosen">Dosen</Label>
+                  <Label htmlFor="lecturer">Dosen</Label>
                   <Input
-                    id="dosen"
-                    value={formData.dosen}
+                    id="lecturer"
+                    value={formData.lecturer}
                     onChange={handleInputChange}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ruangan">Ruangan / Lab</Label>
+                  <Label htmlFor="room">Ruangan / Lab</Label>
                   <Input
-                    id="ruangan"
-                    value={formData.ruangan}
+                    id="room"
+                    value={formData.room}
                     onChange={handleInputChange}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="waktu">Waktu</Label>
+                  <Label htmlFor="time">Waktu</Label>
                   <Input
-                    id="waktu"
-                    value={formData.waktu}
+                    id="time"
+                    value={formData.time}
                     onChange={handleInputChange}
                     disabled={isSubmitting}
                   />

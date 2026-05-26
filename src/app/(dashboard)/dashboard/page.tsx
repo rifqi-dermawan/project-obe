@@ -13,10 +13,10 @@ export const dynamic = "force-dynamic"; // Memastikan data realtime
 
 export default async function DashboardPage() {
   // Mengambil data secara realtime dari database
-  const totalJadwal = await prisma.jadwal.count();
-  const jadwalBentrok = await prisma.jadwal.count({ where: { status: "Bentrok" } });
+  const totalJadwal = await prisma.schedule.count();
+  const jadwalBentrok = await prisma.schedule.count({ where: { status: "Bentrok" } });
   const jadwalSelesai = totalJadwal; // Semua jadwal yang masuk sudah dianalisis oleh sistem
-  const totalRuangan = await prisma.ruangan.count();
+  const totalRuangan = await prisma.room.count();
 
   // Menghitung efisiensi secara dinamis (asumsi 1 lab bisa dipakai 10 slot jadwal per minggu)
   const kapasitasMaksimal = totalRuangan * 10;
@@ -56,7 +56,7 @@ export default async function DashboardPage() {
     },
   ];
 
-  const aktivitasTerakhir = await prisma.jadwal.findMany({
+  const aktivitasTerakhir = await prisma.schedule.findMany({
     orderBy: { createdAt: "desc" },
     take: 4,
   });
@@ -124,10 +124,10 @@ export default async function DashboardPage() {
                   <div className={`h-2 w-2 rounded-full mt-2 shrink-0 ${jadwal.status === 'Bentrok' ? 'bg-amber-500' : 'bg-green-500'}`} />
                   <div>
                     <p className="text-sm font-bold truncate max-w-[200px]">
-                      {jadwal.mataKuliah}
+                      {jadwal.subject}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-zinc-500 mt-0.5">
-                      Ruang: {jadwal.ruangan} - {jadwal.status}
+                      Ruang: {jadwal.room} - {jadwal.status}
                     </p>
                   </div>
                 </div>

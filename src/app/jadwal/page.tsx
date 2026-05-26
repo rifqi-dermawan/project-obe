@@ -13,16 +13,16 @@ import {
   Search,
 } from "lucide-react";
 
-import { getRuangan } from "@/app/actions/ruanganActions";
+import { getRooms } from "@/app/actions/roomActions";
 
 // Tipe data sesuai balasan dari API
 type JadwalPublic = {
   id: number;
-  mataKuliah: string;
-  kelas: string;
-  dosen: string;
-  ruangan: string;
-  waktu: string;
+  subject: string;
+  class: string;
+  lecturer: string;
+  room: string;
+  time: string;
   status: string;
 };
 
@@ -38,12 +38,12 @@ function PublicScheduleContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRuangan, setSelectedRuangan] = useState(initialRuangan);
   const [searchQuery, setSearchQuery] = useState("");
-  const [daftarRuangan, setDaftarRuangan] = useState<{ id: number; nama: string; tipe: string }[]>([]);
+  const [daftarRuangan, setDaftarRuangan] = useState<{ id: number; name: string; type: string }[]>([]);
 
   useEffect(() => {
     const fetchRuangan = async () => {
       try {
-        const res = await getRuangan();
+        const res = await getRooms();
         setDaftarRuangan(res);
       } catch (err) {
         console.error("Gagal mengambil daftar ruangan:", err);
@@ -60,7 +60,7 @@ function PublicScheduleContent() {
         ruangan && ruangan !== "Semua Ruangan"
           ? `?ruangan=${encodeURIComponent(ruangan)}`
           : "";
-      const response = await fetch(`/api/v1/jadwal${query}`);
+      const response = await fetch(`/api/v1/schedules${query}`);
       const result = await response.json();
 
       if (result.success) {
@@ -93,11 +93,11 @@ function PublicScheduleContent() {
   const filteredJadwal = jadwal.filter((item) => {
     const query = searchQuery.toLowerCase();
     return (
-      item.mataKuliah.toLowerCase().includes(query) ||
-      (item.kelas || "").toLowerCase().includes(query) ||
-      item.dosen.toLowerCase().includes(query) ||
-      item.ruangan.toLowerCase().includes(query) ||
-      item.waktu.toLowerCase().includes(query)
+      item.subject.toLowerCase().includes(query) ||
+      (item.class || "").toLowerCase().includes(query) ||
+      item.lecturer.toLowerCase().includes(query) ||
+      item.room.toLowerCase().includes(query) ||
+      item.time.toLowerCase().includes(query)
     );
   });
 
@@ -141,19 +141,19 @@ function PublicScheduleContent() {
                 </option>
                 <optgroup label="Laboratorium:">
                   {daftarRuangan
-                    .filter((r) => r.tipe === "LAB")
+                    .filter((r) => r.type === "LAB")
                     .map((r) => (
-                      <option key={r.id} value={r.nama}>
-                        {r.nama}
+                      <option key={r.id} value={r.name}>
+                        {r.name}
                       </option>
                     ))}
                 </optgroup>
                 <optgroup label="Ruangan Kelas:">
                   {daftarRuangan
-                    .filter((r) => r.tipe === "KELAS")
+                    .filter((r) => r.type === "KELAS")
                     .map((r) => (
-                      <option key={r.id} value={r.nama}>
-                        {r.nama}
+                      <option key={r.id} value={r.name}>
+                        {r.name}
                       </option>
                     ))}
                 </optgroup>
@@ -224,25 +224,25 @@ function PublicScheduleContent() {
                       <td className="py-4 px-6 font-medium text-slate-800 dark:text-zinc-200 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-slate-400 shrink-0" />
-                          {item.waktu}
+                          {item.time}
                         </div>
                       </td>
                       <td className="py-4 px-6 font-semibold text-slate-900 dark:text-white">
-                        {item.mataKuliah}
+                        {item.subject}
                       </td>
                       <td className="py-4 px-6 font-bold text-indigo-600 dark:text-indigo-400">
-                        {item.kelas || "-"}
+                        {item.class || "-"}
                       </td>
                       <td className="py-4 px-6 text-slate-600 dark:text-zinc-300">
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4 text-slate-400 shrink-0" />
-                          {item.dosen}
+                          {item.lecturer}
                         </div>
                       </td>
                       <td className="py-4 px-6 text-slate-600 dark:text-zinc-300 font-medium">
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-indigo-500 shrink-0" />
-                          {item.ruangan}
+                          {item.room}
                         </div>
                       </td>
                       <td className="py-4 px-6 text-center">

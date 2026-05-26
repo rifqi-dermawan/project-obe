@@ -7,23 +7,22 @@ import { UploadCloud, FileText, Loader2, X, BrainCircuit } from "lucide-react";
 
 // 1. Definisikan tipe data yang diharapkan dari hasil kembalian AI
 export type JadwalHasilAI = {
-  mataKuliah: string;
-  kelas: string;
-  dosen: string;
-  ruangan: string;
-  hari: string;
-  jamMulai: string;
-  jamSelesai: string;
+  subject: string;
+  class: string;
+  lecturer: string;
+  room: string;
+  day: string;
+  startTime: string;
+  endTime: string;
 };
 
-// 2. Ganti any[] menjadi JadwalHasilAI[]
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (data: JadwalHasilAI[]) => void;
 };
 
-export default function UploadJadwalModal({
+export default function UploadScheduleModal({
   isOpen,
   onClose,
   onSuccess,

@@ -1,12 +1,12 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { recalculateJadwalStatus } from "./jadwalActions";
+import { recalculateJadwalStatus } from "./scheduleActions";
 
-// 1. Fungsi Ambil Semua Data Dosen
-export async function getDosen() {
+// 1. Get all lecturers
+export async function getLecturers() {
   try {
-    const data = await prisma.dosen.findMany({
+    const data = await prisma.lecturer.findMany({
       orderBy: { createdAt: "desc" },
     });
     return data;
@@ -16,37 +16,37 @@ export async function getDosen() {
   }
 }
 
-export type DosenData = Awaited<ReturnType<typeof getDosen>>[0];
+export type LecturerData = Awaited<ReturnType<typeof getLecturers>>[0];
 
-// 2. Fungsi Tambah Data Dosen
-export async function addDosen(data: {
-  nama: string;
+// 2. Add Lecturer
+export async function addLecturer(data: {
+  name: string;
   nip: string;
-  keahlian: string;
-  kontak: string;
-  mintaLab?: boolean;
+  expertise: string;
+  contact: string;
+  requestLab?: boolean;
 }) {
   try {
-    const newDosen = await prisma.dosen.create({
+    const newLecturer = await prisma.lecturer.create({
       data: {
-        nama: data.nama,
+        name: data.name,
         nip: data.nip,
-        keahlian: data.keahlian,
-        kontak: data.kontak,
-        mintaLab: data.mintaLab ?? false,
+        expertise: data.expertise,
+        contact: data.contact,
+        requestLab: data.requestLab ?? false,
       },
     });
-    return { success: true, data: newDosen };
+    return { success: true, data: newLecturer };
   } catch (error) {
     console.error("Gagal menambah data dosen:", error);
     return { success: false };
   }
 }
 
-// 3. Fungsi Hapus Data Dosen
-export async function deleteDosen(id: number) {
+// 3. Delete Lecturer
+export async function deleteLecturer(id: number) {
   try {
-    await prisma.dosen.delete({
+    await prisma.lecturer.delete({
       where: { id },
     });
     return { success: true };
@@ -56,15 +56,15 @@ export async function deleteDosen(id: number) {
   }
 }
 
-// 3.5. Fungsi Toggle Minta Lab Dosen
-export async function toggleDosenMintaLab(id: number, mintaLab: boolean) {
+// 4. Toggle Lecturer Request Lab
+export async function toggleLecturerRequestLab(id: number, requestLab: boolean) {
   try {
-    const updated = await prisma.dosen.update({
+    const updated = await prisma.lecturer.update({
       where: { id },
-      data: { mintaLab },
+      data: { requestLab },
     });
 
-    // Hitung ulang status bentrok/potensi bentrok seluruh jadwal berdasarkan preferensi lab yang baru di-toggle
+    // Recalculate schedules conflict status
     await recalculateJadwalStatus();
 
     return { success: true, data: updated };
@@ -74,18 +74,18 @@ export async function toggleDosenMintaLab(id: number, mintaLab: boolean) {
   }
 }
 
-// Helper untuk mendekripsi email yang disamarkan oleh Cloudflare
+// Helper to decrypt Cloudflare obfuscated email
 function decryptCfEmail(encodedString: string): string {
   let email = "";
   const r = parseInt(encodedString.substring(0, 2), 16);
   for (let n = 2; n < encodedString.length; n += 2) {
-    const i = parseInt(encodedString.substring(n, 2), 16) ^ r;
+    const i = parseInt(encodedString.substring(n, n + 2), 16) ^ r;
     email += String.fromCharCode(i);
   }
   return email;
 }
 
-// Batch fetching dengan limit concurrency
+// Batch fetching with limit concurrency
 async function fetchDetailPages(
   lecturers: { name: string; url: string; faculty: string; nip: string; role: string }[]
 ) {
@@ -102,14 +102,14 @@ async function fetchDetailPages(
           }
           const html = await res.text();
 
-          // Ekstrak email (Cloudflare obfuscated)
+          // Extract email
           let email = "-";
           const emailMatch = html.match(/data-cfemail="([^"]+)"/i);
           if (emailMatch) {
             email = decryptCfEmail(emailMatch[1]);
           }
 
-          // Ekstrak Keahlian
+          // Extract Expertise
           let keahlian = `Dosen ${lecturer.faculty}`;
           const keahlianMatch = html.match(/<td>Keahlian<\/td>\s*<td>:<\/td>\s*<td>([\s\S]*?)<\/td>/i);
           if (keahlianMatch) {
@@ -127,12 +127,11 @@ async function fetchDetailPages(
   return results;
 }
 
-// 4. Fungsi Sinkronisasi Dosen dari E-Staff UPS Tegal
-export async function syncDosenWithEStaff() {
+// 5. Sync Lecturers from E-Staff
+export async function syncLecturerWithEStaff() {
   try {
     const allLecturers: { name: string; url: string; faculty: string; nip: string; role: string }[] = [];
 
-    // Mengambil data dari halaman 1 sampai 15 (atau sampai halaman kosong)
     for (let page = 1; page <= 15; page++) {
       const res = await fetch(`https://estaff.upstegal.ac.id/tenaga-pendidik?page=${page}`, {
         cache: "no-store",
@@ -155,7 +154,6 @@ export async function syncDosenWithEStaff() {
 
         const rawName = nameMatch[3].replace(/\s+/g, " ").trim();
 
-        // Ekstrak sel data
         const cells: string[] = [];
         const cellMatches = rowHtml.matchAll(/<td>([\s\S]*?)<\/td>/gi);
         for (const cellMatch of cellMatches) {
@@ -166,9 +164,9 @@ export async function syncDosenWithEStaff() {
           parsed.push({
             name: rawName,
             url: detailUrl,
-            faculty: cells[2], // Unit Kerja (misal: FTIK, FEB, dll)
-            nip: cells[3],     // NIP / NIPY
-            role: cells[4],    // Status
+            faculty: cells[2],
+            nip: cells[3],
+            role: cells[4],
           });
         }
       }
@@ -181,16 +179,13 @@ export async function syncDosenWithEStaff() {
       return { success: false, message: "Tidak ada data dosen yang dapat ditarik dari E-Staff.", unmatchedNames: [] };
     }
 
-    // Ambil data dosen yang ada di DB saat ini
-    const existingDosen = await prisma.dosen.findMany();
+    const existingLecturers = await prisma.lecturer.findMany();
 
-    // Lakukan batch fetching untuk semua halaman profil detail dosen untuk mendapatkan email & keahlian
     const detailedLecturers = await fetchDetailPages(allLecturers);
 
     let updatedCount = 0;
     let createdCount = 0;
 
-    // Helper untuk membersihkan gelar dan karakter aneh agar pencocokan nama akurat
     const cleanName = (name: string) => {
       return name
         .toLowerCase()
@@ -200,57 +195,51 @@ export async function syncDosenWithEStaff() {
         .trim();
     };
 
-    // Proses sinkronisasi
     for (const staff of detailedLecturers) {
       const cleanStaffName = cleanName(staff.name);
 
-      // Cari kecocokan di database
-      const match = existingDosen.find((d) => cleanName(d.nama) === cleanStaffName);
+      const match = existingLecturers.find((d) => cleanName(d.name) === cleanStaffName);
 
       if (match) {
-        // Simpan nama lama sebelum di-update untuk update tabel Jadwal
-        const oldName = match.nama;
+        const oldName = match.name;
 
-        // Jika cocok, update NIP, Nama Lengkap Resmi beserta gelar, Keahlian, dan Kontak (email)
-        await prisma.dosen.update({
+        await prisma.lecturer.update({
           where: { id: match.id },
           data: {
-            nama: staff.name,
+            name: staff.name,
             nip: staff.nip,
-            keahlian: staff.keahlian,
-            kontak: staff.email,
+            expertise: staff.keahlian,
+            contact: staff.email,
           },
         });
 
-        // Update juga nama dosen di semua Jadwal terkait jika namanya berbeda (gelarnya bertambah)
+        // Update schedule lecturer names if they changed (e.g. degrees added)
         if (oldName !== staff.name) {
-          await prisma.jadwal.updateMany({
-            where: { dosen: oldName },
-            data: { dosen: staff.name },
+          await prisma.schedule.updateMany({
+            where: { lecturer: oldName },
+            data: { lecturer: staff.name },
           });
         }
 
         updatedCount++;
       } else {
-        // Jika belum ada di DB, buat baru (mendukung FEB, FTIK, FKIP, FH, dll sesuai request)
-        await prisma.dosen.create({
+        await prisma.lecturer.create({
           data: {
-            nama: staff.name,
+            name: staff.name,
             nip: staff.nip,
-            keahlian: staff.keahlian,
-            kontak: staff.email,
+            expertise: staff.keahlian,
+            contact: staff.email,
           },
         });
         createdCount++;
       }
     }
 
-    // Cari dosen di database lokal yang TIDAK cocok dengan data E-Staff manapun (untuk diberitahukan agar disesuaikan manual)
-    const unmatchedDosen = existingDosen.filter(
-      (d) => !allLecturers.some((staff) => cleanName(staff.name) === cleanName(d.nama))
+    const unmatchedLecturers = existingLecturers.filter(
+      (d) => !allLecturers.some((staff) => cleanName(staff.name) === cleanName(d.name))
     );
 
-    const unmatchedNames = unmatchedDosen.map((d) => d.nama);
+    const unmatchedNames = unmatchedLecturers.map((d) => d.name);
 
     return {
       success: true,
@@ -262,4 +251,3 @@ export async function syncDosenWithEStaff() {
     return { success: false, message: "Gagal terhubung dengan server E-Staff UPS Tegal.", unmatchedNames: [] };
   }
 }
-
