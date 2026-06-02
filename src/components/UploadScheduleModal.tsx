@@ -63,7 +63,7 @@ export default function UploadScheduleModal({
       } else {
         setError(result.error || "Terjadi kesalahan saat memproses data.");
       }
-    } catch (err: unknown) {
+    } catch {
       setError("Gagal terhubung ke AI Engine.");
     } finally {
       setIsProcessing(false);

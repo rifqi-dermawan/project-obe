@@ -5,16 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Settings, Save, Loader2, Building2, Bell, Palette } from "lucide-react";
+import { Save, Loader2, Building2, Bell } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
   getSettings,
   updateSettings,
-  SettingsData,
 } from "@/app/actions/settingsActions";
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -57,10 +56,7 @@ export default function SettingsPage() {
     setFormData({ ...formData, emailNotification: checked });
   };
 
-  const handleThemeChange = (selectedTheme: string) => {
-    setFormData({ ...formData, appTheme: selectedTheme });
-    setTheme(selectedTheme);
-  };
+
 
   const handleSave = async () => {
     setIsSaving(true);

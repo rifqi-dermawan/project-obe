@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Route yang boleh diakses tanpa login
-const publicRoutes = ["/login", "/api/auth"];
 
 // Route yang harus dilindungi (prefix matching)
 const protectedPrefixes = ["/dashboard"];
@@ -10,10 +8,6 @@ const protectedPrefixes = ["/dashboard"];
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Cek apakah ini route publik
-  const isPublic = publicRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
 
   // Cek apakah ini route yang dilindungi
   const isProtected = protectedPrefixes.some((prefix) =>

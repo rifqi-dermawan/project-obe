@@ -9,12 +9,13 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   console.error = (...args: unknown[]) => {
     const isSuppressedWarning = args.some((arg) => {
       if (typeof arg !== "string") return false;
+      const lowerArg = arg.toLowerCase();
       return (
-        arg.includes("Encountered a script tag while rendering React component") ||
-        arg.includes("fdprocessedid") ||
-        arg.includes("hydration-mismatch") ||
-        arg.includes("hydrated but some attributes") ||
-        arg.includes("Extra attributes from the server")
+        lowerArg.includes("encountered a script tag while rendering react component") ||
+        lowerArg.includes("fdprocessedid") ||
+        lowerArg.includes("hydration") ||
+        lowerArg.includes("mismatch") ||
+        lowerArg.includes("extra attributes from the server")
       );
     });
 

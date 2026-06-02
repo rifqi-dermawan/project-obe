@@ -117,7 +117,7 @@ async function fetchDetailPages(
           }
 
           return { ...lecturer, email, keahlian };
-        } catch (error) {
+        } catch {
           return { ...lecturer, email: "-", keahlian: `Dosen ${lecturer.faculty}` };
         }
       })

@@ -55,7 +55,7 @@ export default function LecturersPage() {
           description: result.message,
         });
       }
-    } catch (error) {
+    } catch {
       toast.error("Sinkronisasi Gagal", {
         description: "Gagal terhubung dengan server E-Staff UPS Tegal.",
       });

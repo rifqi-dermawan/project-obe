@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import {
   Mail,
   Lock,
-  ArrowRight,
   Loader2,
   QrCode,
   Eye,
@@ -17,7 +15,7 @@ import { signIn, useSession } from "next-auth/react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [errorAlert, setErrorAlert] = useState("");
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -80,7 +78,7 @@ export default function LoginPage() {
           </div>
 
           <h1 className="text-xl sm:text-2xl font-extrabold text-center text-slate-900 dark:text-white mb-2 tracking-tight">
-            Halaman Login Administrator
+            Halaman Login Admin
           </h1>
           <p className="text-center text-sm text-slate-500 dark:text-zinc-400 mb-6 font-medium">
             Manajemen Jadwal Informatika
@@ -174,7 +172,7 @@ export default function LoginPage() {
 
         <div className="bg-slate-50 dark:bg-zinc-950/50 p-5 border-t border-slate-100 dark:border-white/5 text-center flex flex-col items-center gap-2">
           <p className="text-xs text-slate-500 dark:text-zinc-500">
-            Halaman ini khusus untuk Administrator.
+            Halaman ini khusus untuk Admin.
           </p>
         </div>
       </motion.div>
