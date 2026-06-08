@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { Schedule } from "@prisma/client";
 
 export const dynamic = "force-dynamic"; // Memastikan data realtime
 
@@ -119,7 +120,7 @@ export default async function DashboardPage() {
                 Belum ada aktivitas.
               </p>
             ) : (
-              aktivitasTerakhir.map((jadwal) => (
+              aktivitasTerakhir.map((jadwal: Schedule) => (
                 <div key={jadwal.id} className="flex gap-4 items-start">
                   <div className={`h-2 w-2 rounded-full mt-2 shrink-0 ${jadwal.status === 'Bentrok' ? 'bg-amber-500' : 'bg-green-500'}`} />
                   <div>
