@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { recalculateJadwalStatus } from "@/app/actions/scheduleActions";
 
 // Endpoint GET Publik untuk diakses oleh Public App (Mahasiswa via QR Code)
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     // Tangkap parameter 'ruangan' dari URL (Contoh: ?ruangan=Lab Komputer 1)
     const { searchParams } = new URL(request.url);
