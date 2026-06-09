@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-
 // Route yang harus dilindungi (prefix matching)
 const protectedPrefixes = ["/dashboard"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
 
   // Cek apakah ini route yang dilindungi
   const isProtected = protectedPrefixes.some((prefix) =>
@@ -15,16 +13,15 @@ export async function proxy(request: NextRequest) {
   );
 
   // Baca JWT session token dari cookie NextAuth (v4)
-  // NextAuth v4 menyimpan token di cookie bernama: next-auth.session-token
   const sessionToken =
     request.cookies.get("next-auth.session-token")?.value ||
     request.cookies.get("__Secure-next-auth.session-token")?.value;
 
   const isLoggedIn = !!sessionToken;
 
-  // Jika akses route yang dilindungi tapi belum login → tendang ke /login
+  // Jika akses route yang dilindungi tapi belum login → tendang ke /
   if (isProtected && !isLoggedIn) {
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL("/", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
@@ -32,6 +29,11 @@ export async function proxy(request: NextRequest) {
   // Jika sudah login tapi masih di halaman login / root → redirect ke dashboard
   if (isLoggedIn && (pathname === "/login" || pathname === "/")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Jika belum login dan mengakses /login secara langsung → redirect ke /
+  if (!isLoggedIn && pathname === "/login") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

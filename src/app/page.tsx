@@ -1,139 +1,204 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BrainCircuit } from "lucide-react";
+import { BrainCircuit, Loader2, Eye, EyeOff, CalendarRange } from "lucide-react";
 import Link from "next/link";
-import SciFiBackground from "@/components/sci-fi-background";
+import DecisionTreePreview from "@/components/DecisionTreePreview";
+import { signIn, useSession } from "next-auth/react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { status } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorAlert, setErrorAlert] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Jika sudah login, redirect ke dashboard
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
+
+  // Tampilkan loading spinner saat mengecek session
+  if (status === "loading" || status === "authenticated") {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-800 dark:text-zinc-200" />
+      </div>
+    );
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(false);
+    setErrorAlert("");
+    setIsLoading(true);
+
+    const result = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setErrorAlert(result.error);
+      setIsLoading(false);
+    } else {
+      window.location.href = "/dashboard";
+    }
+  };
+
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 p-4 font-sans text-slate-900">
-      {/* Background Terang Clean */}
-      <SciFiBackground />
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-slate-50 dark:bg-zinc-950 font-sans text-slate-900 dark:text-slate-100">
+      {/* Panel Kiri - Hanya tampil di desktop (lg ke atas) */}
+      <div className="hidden lg:block lg:col-span-6 xl:col-span-7 h-screen sticky top-0 overflow-hidden">
+        <DecisionTreePreview />
+      </div>
 
-      {/* Container Login Tengah (White Glassmorphism) */}
-      <div className="relative z-10 w-full max-w-[440px] rounded-3xl bg-white/80 p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl border border-slate-200/60">
-        {/* Header Title & Logo */}
-        <div className="mb-8 flex flex-col items-center space-y-3 text-center">
-          <div className="rounded-2xl bg-white border border-slate-200 p-3.5 shadow-sm">
-            <BrainCircuit className="h-8 w-8 text-slate-800" />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 heading">
-              DT-Scheduling
-            </h1>
-            <p className="text-xs sm:text-sm font-medium text-slate-500">
-              Analisis Jadwal Kelas Informatika
-            </p>
-          </div>
-        </div>
-
-        {/* Form Input Biasa (Dipindah ke atas) */}
-        <div className="space-y-5 mb-6">
-          <div className="space-y-2.5">
-            <Label
-              htmlFor="email"
-              className="font-semibold text-sm text-slate-700"
-            >
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="mahasiswa@upstegal.ac.id"
-              className="h-12 rounded-xl bg-white text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-slate-400 focus:ring-slate-400 transition-colors shadow-sm"
-            />
-          </div>
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <Label
-                htmlFor="password"
-                className="font-semibold text-sm text-slate-700"
-              >
-                Password
-              </Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline transition-colors"
-              >
-                Lupa Password?
-              </Link>
+      {/* Panel Kanan - Formulir Login */}
+      <div className="col-span-1 lg:col-span-6 xl:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 md:p-16 bg-white dark:bg-zinc-900/50 backdrop-blur-md border-l border-slate-200/50 dark:border-zinc-800/40 shadow-2xl min-h-screen">
+        <div className="w-full max-w-[400px] space-y-8">
+          
+          {/* Logo & Judul */}
+          <div className="space-y-3">
+            <div className="inline-flex p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+              <BrainCircuit className="h-6 w-6" />
             </div>
-            <Input
-              id="password"
-              type="password"
-              className="h-12 rounded-xl bg-white text-slate-900 border-slate-200 focus:border-slate-400 focus:ring-slate-400 transition-colors shadow-sm"
-            />
+            <div className="space-y-1.5">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                Selamat Datang
+              </h1>
+              <p className="text-sm text-slate-500 dark:text-zinc-400">
+                Silakan masuk untuk mengelola dan menganalisis jadwal Informatika.
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Tombol Submit Utama (Dipindah ke atas) */}
-        <Button className="w-full h-12 rounded-xl font-bold bg-slate-900 text-white transition-all hover:bg-slate-800 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 border-0 mb-3">
-          Masuk Ke Dashboard
-        </Button>
+          {/* Alert Error */}
+          {errorAlert && (
+            <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/20 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/20">
+              {errorAlert}
+            </div>
+          )}
 
-        {/* Tombol Portal Publik */}
-        <Link href="/jadwal" className="block w-full mb-6">
-          <Button variant="outline" className="w-full h-12 rounded-xl font-bold border-slate-200 text-slate-700 hover:bg-slate-50 transition-all dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
-            Lihat Jadwal Kuliah (Publik)
-          </Button>
-        </Link>
+          {/* Form Utama */}
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="font-semibold text-xs text-slate-700 dark:text-zinc-300 ml-0.5"
+              >
+                Alamat Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                placeholder="admin@informatika.ac.id"
+                disabled={isLoading}
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className="h-12 px-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-950 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm"
+              />
+            </div>
 
-        {/* Divider (Teks disesuaikan) */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-200" />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between ml-0.5">
+                <Label
+                  htmlFor="password"
+                  className="font-semibold text-xs text-slate-700 dark:text-zinc-300"
+                >
+                  Kata Sandi
+                </Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium hover:underline transition-colors"
+                >
+                  Lupa kata sandi?
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  disabled={isLoading}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="h-12 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-950 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 transition-colors disabled:opacity-50"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Tombol Sign In */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 mt-2 rounded-xl font-bold bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white shadow-md shadow-indigo-500/10 hover:shadow-indigo-500/20 transition-all active:scale-[0.99] border-0 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Mengautentikasi...
+                </>
+              ) : (
+                "Masuk ke Dashboard"
+              )}
+            </Button>
+          </form>
+
+          {/* Pembatas / Divider */}
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200 dark:border-zinc-800" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white dark:bg-zinc-900 px-3 font-semibold text-slate-400 dark:text-zinc-500">
+                Atau masuk sebagai publik
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-3 font-semibold text-slate-400 rounded-full border border-slate-200">
-              Atau lanjutkan dengan
-            </span>
+
+          {/* Portal Publik */}
+          <Link href="/jadwal" className="block w-full">
+            <Button
+              variant="outline"
+              className="w-full h-12 rounded-xl font-bold border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/50 text-slate-700 dark:text-zinc-300 transition-all flex items-center justify-center gap-2"
+            >
+              <CalendarRange className="w-4 h-4 text-slate-500 dark:text-zinc-400" />
+              Lihat Jadwal Kuliah (Publik)
+            </Button>
+          </Link>
+
+          {/* Footer */}
+          <div className="text-center text-xs text-slate-400 dark:text-zinc-500 pt-4">
+            <p>Universitas Pancasakti Tegal © 2026</p>
           </div>
-        </div>
 
-        {/* Tombol SSO (Dipindah ke bawah) */}
-        <div className="space-y-3">
-          <Button
-            variant="outline"
-            className="w-full font-medium h-11 sm:h-12 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-all shadow-sm"
-          >
-            <svg className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            Google
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full font-medium h-11 sm:h-12 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-all shadow-sm"
-          >
-            <svg className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 21 21">
-              <rect x="1" y="1" width="9" height="9" fill="#f25022" />
-              <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
-              <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
-              <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
-            </svg>
-            Microsoft
-          </Button>
         </div>
-
-        <p className="px-8 mt-8 text-center text-xs text-slate-500">
-          Universitas Pancasakti Tegal © 2026
-        </p>
       </div>
     </div>
   );
